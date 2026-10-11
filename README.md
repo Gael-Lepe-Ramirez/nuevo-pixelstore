@@ -3,7 +3,7 @@
 Plataforma de comercio electrónico desarrollada en Laravel para la gestión y venta de hardware y equipos de alto rendimiento. Cuenta con un catálogo dinámico, carrito de compras y sistema de autenticación con roles de usuario (Administrador y Cliente).
 
 ## Requisitos Previos
-* PHP (v8.2 o superior)
+* PHP (v8.3 o superior)
 * Composer
 * Servidor de base de datos (MySQL/MariaDB o SQLite)
 
@@ -11,11 +11,11 @@ Plataforma de comercio electrónico desarrollada en Laravel para la gestión y v
 
 **Paso 1: Clonar el repositorio**
 Elige el método que prefieras:
-* SSH: git@github.com:Gael-Lepe-Ramirez/pixelstore.git
-* HTTPS: https://github.com/Gael-Lepe-Ramirez/pixelstore.git
+* SSH: git@github.com:Gael-Lepe-Ramirez/nuevo-pixelstore.git
+* HTTPS: https://github.com/Gael-Lepe-Ramirez/nuevo-pixelstore.git
 
     git clone <ENLACE_ELEGIDO>
-    cd pixelstore ,
+    cd nuevo-pixelstore ,
     composer install ,
     npm install ,
     npm run build ,
@@ -36,7 +36,7 @@ Ejecuta el siguiente bloque para generar los accesos a las imágenes, poblar los
     php artisan migrate:fresh --seed
 
 **Paso 4: Acceso a la tienda**
-* Si usas Laravel Herd (o dominio personalizado): Accede a http://pixelstore.test/products
+* Si usas Laravel Herd (o dominio personalizado): Accede a http://nuevo-pixelstore.test/products
 * Si usas terminal: Ejecuta `php artisan serve` y accede a http://localhost:8000
 
 ---
