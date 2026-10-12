@@ -25,8 +25,13 @@
 
                 <h3 class="font-weight-bold text-dark mb-3">¡Compra Exitosa!</h3>
                 <p class="text-muted mb-2" style="font-size: 1.2rem;">Gracias por tu preferencia, {{ auth()->user()->name }}.</p>
+                <p class="text-muted mb-3">
+                    Tu orden <strong class="text-dark">#{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</strong> ha sido registrada correctamente. Hemos enviado una copia del recibo a tu correo.
+                </p>
                 <p class="text-muted mb-5">
-                    Tu orden <strong class="text-dark">#{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</strong> ha sido procesada correctamente y tus componentes ya se están preparando para el envío. Hemos enviado una copia del recibo a tu correo.
+                    <strong class="text-dark">Pago:</strong> {{ $order->paymentMethod->name }} ({{ $order->payment_status }}) ·
+                    <strong class="text-dark">Envío:</strong> {{ $order->shippingMethod->name }}<br>
+                    <strong class="text-dark">Entrega en:</strong> {{ $order->shipping_address }}
                 </p>
 
                 <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center">

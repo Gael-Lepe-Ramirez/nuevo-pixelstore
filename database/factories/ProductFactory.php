@@ -20,6 +20,7 @@ class ProductFactory extends Factory
     $name = $this->faker->unique()->sentence(3);
     return [
         'category_id' => \App\Models\Category::factory(),
+        'brand_id' => \App\Models\Brand::query()->inRandomOrder()->value('id') ?? \App\Models\Brand::factory(),
         'name' => $name,
         'slug' => str($name)->slug(),
         'description' => $this->faker->paragraph(),

@@ -1,7 +1,7 @@
 <x-mail::message>
 # ¡Gracias por tu compra, {{ $order->user->name }}!
 
-Tu orden ha sido procesada exitosamente y tus componentes ya se están preparando para el envío. 
+Tu orden ha sido registrada. Entrega en: {{ $order->shipping_address }} ({{ $order->shippingMethod->name }}). Pago: {{ $order->paymentMethod->name }}, estado «{{ $order->payment_status }}».
 
 Aquí tienes el resumen exacto de tu transacción:
 
@@ -16,7 +16,10 @@ Aquí tienes el resumen exacto de tu transacción:
 @endforeach
 </x-mail::table>
 
-### **Total Pagado:** ${{ number_format($granTotal, 2) }}
+**Subtotal:** ${{ number_format($granTotal, 2) }}  
+**Envío:** ${{ number_format($order->total_amount - $granTotal, 2) }}
+
+### **Total:** ${{ number_format($order->total_amount, 2) }}
 
 Si tienes alguna duda con tu pedido, puedes responder directamente a este correo.
 

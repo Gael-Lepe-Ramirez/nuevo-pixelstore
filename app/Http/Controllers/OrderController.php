@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\PaymentMethod;
+use App\Models\ShippingMethod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderReceipt;
 
@@ -14,7 +17,9 @@ class OrderController extends Controller
     public function cart()
     {
         $cart = session()->get('cart', []);
-        return view('orders.cart', compact('cart'));
+        $shippingMethods = ShippingMethod::orderBy('cost')->get();
+        $paymentMethods = PaymentMethod::orderBy('name')->get();
+        return view('orders.cart', compact('cart', 'shippingMethods', 'paymentMethods'));
     }
 
     // Agrega un producto al carrito en la sesión
@@ -48,38 +53,77 @@ class OrderController extends Controller
         return redirect()->back();
     }
 
-    // Procesa la compra y la guarda en la Base de Datos (Relación M:N)
+    // Procesa la compra y la guarda en la Base de Datos (relaciones 1:N y N:M del modelo)
     public function checkout(Request $request)
     {
         $cart = session()->get('cart', []);
-        
+
         if (empty($cart)) {
             return redirect()->route('products.index');
         }
 
-        // Calcular el total
-        $total = 0;
-        foreach ($cart as $details) {
-            $total += $details['price'] * $details['quantity'];
-        }
-
-        // 1. Crear la Orden (Relación 1:M con el Usuario)
-        $order = auth()->user()->orders()->create([
-            'total' => $total,
-            'status' => 'Completada'
+        $data = $request->validate([
+            'shipping_method_id' => 'required|exists:shipping_methods,id',
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'shipping_address' => 'required|string|max:255',
+        ], [
+            'shipping_method_id.required' => 'Elige un método de envío.',
+            'payment_method_id.required' => 'Elige un método de pago.',
+            'shipping_address.required' => 'Escribe la dirección de entrega.',
         ]);
 
-        // 2. Asociar los productos a la orden (Relación M:N)
-        foreach ($cart as $id => $details) {
-            $order->products()->attach($id, [
-                'quantity' => $details['quantity'],
-                'price' => $details['price'],
-                'unit_price' => $details['price']
-            ]);
-            
-            // Opcional: Descontar del stock real
-            $product = Product::find($id);
-            $product->decrement('stock', $details['quantity']);
+        try {
+            $order = DB::transaction(function () use ($cart, $data) {
+                // Se bloquean los productos para que dos compras simultáneas no vendan la misma existencia (RN2).
+                $products = Product::whereIn('id', array_keys($cart))->lockForUpdate()->get()->keyBy('id');
+
+                $subtotal = 0;
+                foreach ($cart as $id => $details) {
+                    $product = $products->get($id);
+                    $quantity = (int) $details['quantity'];
+
+                    if (! $product || ! $product->is_active) {
+                        throw new \RuntimeException('Un producto de tu carrito ya no está disponible.');
+                    }
+                    if ($quantity < 1 || $quantity > $product->stock) {
+                        throw new \RuntimeException("No hay existencias suficientes de «{$product->name}» (disponibles: {$product->stock}).");
+                    }
+
+                    // El precio se toma de la base de datos, no de la sesión (RN3).
+                    $subtotal += $product->price * $quantity;
+                }
+
+                $shipping = ShippingMethod::findOrFail($data['shipping_method_id']);
+
+                // 1. PEDIDO (relaciones «realiza», «usa» y «paga»); la dirección se copia al pedido (RN7).
+                $order = auth()->user()->orders()->create([
+                    'shipping_method_id' => $shipping->id,
+                    'payment_method_id' => $data['payment_method_id'],
+                    'status' => 'pendiente',
+                    'payment_status' => 'pendiente',
+                    'shipping_address' => $data['shipping_address'],
+                    'total_amount' => $subtotal + $shipping->cost, // RN4
+                ]);
+
+                // 2. DETALLE_PEDIDO (relación «incluye») y salida de inventario (RN2)
+                foreach ($cart as $id => $details) {
+                    $product = $products->get($id);
+                    $order->products()->attach($id, [
+                        'quantity' => $details['quantity'],
+                        'unit_price' => $product->price,
+                    ]);
+                    $product->decrement('stock', $details['quantity']);
+                }
+
+                return $order;
+            });
+        } catch (\RuntimeException $e) {
+            return redirect()->route('cart.index')->withInput()->with('error', $e->getMessage());
+        }
+
+        // Si el cliente aún no tenía dirección guardada en su perfil, se conserva la de esta compra.
+        if (! auth()->user()->shipping_address) {
+            auth()->user()->update(['shipping_address' => $data['shipping_address']]);
         }
 
         // 3. Enviar el recibo por correo electrónico

@@ -118,6 +118,7 @@
           </div>
           
           <div class="product-body">
+            <small class="text-muted text-uppercase" style="letter-spacing:1px;">{{ $product->brand?->name }}</small>
             <h4 class="product-title" title="{{ $product->name }}">{{ $product->name }}</h4>
             <div class="product-price">${{ number_format($product->price, 2) }}</div>
             <p class="product-desc">{{ $product->description }}</p>
