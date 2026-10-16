@@ -24,6 +24,24 @@
         </div>
 
         <div>
+            <x-input-label for="last_name" value="Apellidos" />
+            <x-text-input id="last_name" name="last_name" type="text" maxlength="80" class="mt-1 block w-full" :value="old('last_name', $user->last_name)" autocomplete="family-name" />
+            <x-input-error class="mt-2" :messages="$errors->get('last_name')" />
+        </div>
+
+        <div>
+            <x-input-label for="phone" value="Teléfono" />
+            <x-text-input id="phone" name="phone" type="text" maxlength="15" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+        </div>
+
+        <div>
+            <x-input-label for="shipping_address" value="Dirección de envío" />
+            <x-text-input id="shipping_address" name="shipping_address" type="text" maxlength="255" class="mt-1 block w-full" :value="old('shipping_address', $user->shipping_address)" autocomplete="street-address" />
+            <x-input-error class="mt-2" :messages="$errors->get('shipping_address')" />
+        </div>
+
+        <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />

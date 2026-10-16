@@ -44,6 +44,15 @@
                         <i class="fa fa-user mr-1"></i> {{ auth()->user()->name }}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userDropdown" style="border-radius: 8px;">
+                        <a class="dropdown-item py-2" href="{{ route('profile.edit') }}"><i class="fa fa-user-circle mr-2"></i> Mi perfil</a>
+                        @can('admin')
+                          <div class="dropdown-divider"></div>
+                          <h6 class="dropdown-header">Administración</h6>
+                          <a class="dropdown-item py-2" href="{{ route('suppliers.index') }}"><i class="fa fa-truck mr-2"></i> Proveedores</a>
+                          <a class="dropdown-item py-2" href="{{ route('purchase-orders.index') }}"><i class="fa fa-list-alt mr-2"></i> Órdenes de compra</a>
+                          <a class="dropdown-item py-2" href="{{ route('products.create') }}"><i class="fa fa-plus mr-2"></i> Nuevo producto</a>
+                          <div class="dropdown-divider"></div>
+                        @endcan
                         <form method="POST" action="{{ route('logout') }}" class="mb-0">
                             @csrf
                             <button type="submit" class="dropdown-item text-danger font-weight-bold py-2" style="cursor: pointer; background: none; border: none; width: 100%; text-align: left;">
