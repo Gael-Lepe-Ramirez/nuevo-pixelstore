@@ -136,6 +136,14 @@ class OrderController extends Controller
         return redirect()->route('orders.success', $order->id);
     }
 
+    // Historial del cliente: aquí ve cómo avanzan sus pedidos y su pago.
+    public function mine()
+    {
+        $orders = auth()->user()->orders()->with(['shippingMethod', 'paymentMethod'])->latest('id')->get();
+
+        return view('orders.mine', compact('orders'));
+    }
+
     public function downloadPDF(\App\Models\Order $order)
     {
         // Seguridad: Verificar que el usuario sea el dueño de la compra o el admin
