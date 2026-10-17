@@ -14,12 +14,24 @@ class Product extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'category_id', 'name', 'slug', 'description', 'price', 'stock', 'is_active'
+        'category_id', 'brand_id', 'name', 'slug', 'description', 'price', 'stock', 'is_active'
     ];
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function purchaseOrders(): BelongsToMany
+    {
+        return $this->belongsToMany(PurchaseOrder::class, 'purchase_order_product')
+            ->withPivot('quantity', 'unit_cost')
+            ->withTimestamps();
     }
 
     public function orders(): BelongsToMany

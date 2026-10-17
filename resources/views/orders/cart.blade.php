@@ -84,22 +84,81 @@
             </div>
         </div>
         
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center bg-white p-4 shadow-sm" style="border-radius: 12px;">
-            <a href="{{ route('products.index') }}" class="btn btn-light border px-4 py-2 mb-3 mb-md-0" style="border-radius: 8px; font-weight: 500;">
-                <i class="fa fa-arrow-left mr-2"></i> Seguir Comprando
-            </a>
-            
-            <div class="d-flex align-items-center">
-                <span class="mr-4 text-uppercase font-weight-bold text-muted">Total a pagar:</span>
-                <span class="cart-total mr-4">${{ number_format($total, 2) }}</span>
-                <form action="{{ route('cart.checkout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-dark font-weight-bold px-4 py-2 shadow-sm text-uppercase" style="border-radius: 8px; letter-spacing: 1px; cursor: pointer;">
-                        Confirmar Compra
-                    </button>
-                </form>
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        <form action="{{ route('cart.checkout') }}" method="POST" class="bg-white p-4 shadow-sm" style="border-radius: 12px;">
+            @csrf
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="shipping_method_id" class="font-weight-bold text-dark">Método de envío</label>
+                    <select name="shipping_method_id" id="shipping_method_id" class="form-control @error('shipping_method_id') is-invalid @enderror" required>
+                        <option value="">-- Selecciona --</option>
+                        @foreach($shippingMethods as $method)
+                            <option value="{{ $method->id }}" data-cost="{{ $method->cost }}" {{ old('shipping_method_id') == $method->id ? 'selected' : '' }}>
+                                {{ $method->name }} — ${{ number_format($method->cost, 2) }}
+                                ({{ $method->estimated_days > 0 ? $method->estimated_days . ' días' : 'inmediato' }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('shipping_method_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label for="payment_method_id" class="font-weight-bold text-dark">Método de pago</label>
+                    <select name="payment_method_id" id="payment_method_id" class="form-control @error('payment_method_id') is-invalid @enderror" required>
+                        <option value="">-- Selecciona --</option>
+                        @foreach($paymentMethods as $method)
+                            <option value="{{ $method->id }}" {{ old('payment_method_id') == $method->id ? 'selected' : '' }}>{{ $method->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('payment_method_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="col-12 form-group">
+                    <label for="shipping_address" class="font-weight-bold text-dark">Dirección de entrega</label>
+                    <textarea name="shipping_address" id="shipping_address" rows="2" maxlength="255" class="form-control @error('shipping_address') is-invalid @enderror" placeholder="Calle, número, colonia, ciudad, estado, C.P. y referencias" required>{{ old('shipping_address', auth()->user()->shipping_address) }}</textarea>
+                    @error('shipping_address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    <small class="text-muted">Esta dirección se guarda en el pedido y no cambia aunque después edites tu perfil.</small>
+                </div>
             </div>
-        </div>
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center border-top pt-4">
+                <a href="{{ route('products.index') }}" class="btn btn-light border px-4 py-2 mb-3 mb-md-0" style="border-radius: 8px; font-weight: 500;">
+                    <i class="fa fa-arrow-left mr-2"></i> Seguir Comprando
+                </a>
+
+                <div class="text-right">
+                    <div class="text-muted">Subtotal: ${{ number_format($total, 2) }}</div>
+                    <div class="text-muted">Envío: $<span id="shipping-cost">0.00</span></div>
+                    <div class="d-flex align-items-center justify-content-end mt-2">
+                        <span class="mr-3 text-uppercase font-weight-bold text-muted">Total a pagar:</span>
+                        <span class="cart-total mr-4">$<span id="grand-total">{{ number_format($total, 2) }}</span></span>
+                        <button type="submit" class="btn btn-dark font-weight-bold px-4 py-2 shadow-sm text-uppercase" style="border-radius: 8px; letter-spacing: 1px; cursor: pointer;">
+                            Confirmar Compra
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            (function () {
+                const subtotal = {{ $total }};
+                const select = document.getElementById('shipping_method_id');
+                const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                function update() {
+                    const opt = select.options[select.selectedIndex];
+                    const cost = opt && opt.dataset.cost ? parseFloat(opt.dataset.cost) : 0;
+                    document.getElementById('shipping-cost').textContent = fmt(cost);
+                    document.getElementById('grand-total').textContent = fmt(subtotal + cost);
+                }
+                select.addEventListener('change', update);
+                update();
+            })();
+        </script>
         @else
             <div class="text-center py-5 bg-white shadow-sm cart-wrapper">
                 <div class="mb-4">

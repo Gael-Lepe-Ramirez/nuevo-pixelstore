@@ -24,7 +24,9 @@
     <div class="info-cliente">
         <strong>Datos del Cliente:</strong><br>
         Nombre: {{ $order->user->name }}<br>
-        Email: {{ $order->user->email }}
+        Email: {{ $order->user->email }}<br>
+        Dirección de entrega: {{ $order->shipping_address }}<br>
+        Envío: {{ $order->shippingMethod->name }} · Pago: {{ $order->paymentMethod->name }} ({{ $order->payment_status }})
     </div>
 
     <table>
@@ -51,7 +53,9 @@
     </table>
 
     <div class="total">
-        Total Pagado: ${{ number_format($granTotal, 2) }}
+        Subtotal: ${{ number_format($granTotal, 2) }}<br>
+        Envío: ${{ number_format($order->total_amount - $granTotal, 2) }}<br>
+        Total: ${{ number_format($order->total_amount, 2) }}
     </div>
 </body>
 </html>

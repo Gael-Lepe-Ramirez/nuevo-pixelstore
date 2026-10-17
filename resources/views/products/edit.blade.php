@@ -68,6 +68,21 @@
                 @enderror
               </div>
 
+              <div class="col-lg-12 form-group mb-4">
+                <label for="brand_id" class="font-weight-bold text-dark mb-2">Marca</label>
+                <select name="brand_id" id="brand_id" class="form-control custom-input @error('brand_id') is-invalid @enderror">
+                  <option value="">-- Selecciona una marca --</option>
+                  @foreach($brands as $brand)
+                    <option value="{{ $brand->id }}" {{ old('brand_id', $product->brand_id) == $brand->id ? 'selected' : '' }}>
+                      {{ $brand->name }}
+                    </option>
+                  @endforeach
+                </select>
+                @error('brand_id')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+
               <div class="col-lg-6 form-group mb-4">
                 <label for="price" class="font-weight-bold text-dark mb-2">Precio ($)</label>
                 <input name="price" type="number" step="0.01" class="form-control custom-input @error('price') is-invalid @enderror" id="price" value="{{ old('price', $product->price) }}">
@@ -77,11 +92,8 @@
               </div>
 
               <div class="col-lg-6 form-group mb-4">
-                <label for="stock" class="font-weight-bold text-dark mb-2">Stock Disponible</label>
-                <input name="stock" type="number" class="form-control custom-input @error('stock') is-invalid @enderror" id="stock" value="{{ old('stock', $product->stock) }}">
-                @error('stock')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+                <label class="font-weight-bold text-dark mb-2">Stock actual</label>
+                <div class="form-control custom-input bg-light text-muted" style="height:auto;">{{ $product->stock }} (cambia con órdenes de compra y pedidos)</div>
               </div>
 
               <div class="col-lg-12 form-group mb-4">
