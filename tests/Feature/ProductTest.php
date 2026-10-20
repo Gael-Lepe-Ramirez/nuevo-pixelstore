@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -37,13 +38,14 @@ class ProductTest extends TestCase
         // Creamos un admin y una categoría requerida
         $admin = User::factory()->create(['role' => 'admin']);
         $category = Category::factory()->create();
+        $brand = Brand::factory()->create();   // la marca es obligatoria en el modelo de datos nuevo
 
         // 1. Actuar: Petición POST con datos válidos
         $response = $this->actingAs($admin)->post(route('products.store'), [
             'name' => 'Tarjeta Gráfica RTX 4090',
             'category_id' => $category->id,
+            'brand_id' => $brand->id,
             'price' => 25000.50,
-            'stock' => 5,
             'description' => 'Alta potencia para gaming.',
         ]);
 
@@ -67,7 +69,7 @@ class ProductTest extends TestCase
         ]);
 
         // 2. Afirmar: Aseguramos error de validación
-        $response->assertSessionHasErrors(['name', 'price', 'category_id']);
+        $response->assertSessionHasErrors(['name', 'price', 'category_id', 'brand_id']);
     }
 
     /**

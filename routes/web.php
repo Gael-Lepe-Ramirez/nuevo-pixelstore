@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\PurchaseOrderController;
 
 Route::get('/', function () {
@@ -39,6 +40,13 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
     // Abastecimiento: proveedores y órdenes de compra (el stock entra al recibir una orden)
     Route::prefix('admin')->group(function () {
+        // Pedidos: consulta y cambios de estado (RN8)
+        Route::get('orders', [OrderAdminController::class, 'index'])->name('admin.orders.index');
+        Route::get('orders/{order}', [OrderAdminController::class, 'show'])->name('admin.orders.show');
+        Route::post('orders/{order}/{action}', [OrderAdminController::class, 'transition'])
+            ->whereIn('action', ['pay', 'reject-payment', 'ship', 'deliver', 'cancel'])
+            ->name('admin.orders.transition');
+
         Route::resource('suppliers', SupplierController::class)->except('show');
         Route::resource('purchase-orders', PurchaseOrderController::class)->only(['index', 'create', 'store', 'show']);
         Route::post('purchase-orders/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
@@ -51,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/carrito/agregar/{product}', [OrderController::class, 'add'])->name('cart.add');
     Route::post('/carrito/remover/{id}', [OrderController::class, 'remove'])->name('cart.remove');
     Route::post('/comprar', [OrderController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/mis-pedidos', [OrderController::class, 'mine'])->name('orders.mine');
     Route::get('/orders/{order}/pdf', [App\Http\Controllers\OrderController::class, 'downloadPDF'])->name('orders.pdf');
     Route::get('/orders/{order}/success', [OrderController::class, 'success'])->name('orders.success');
 });
