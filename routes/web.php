@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\OrderAdminController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\PurchaseOrderController;
 
 Route::get('/', function () {
@@ -40,6 +41,16 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
     // Abastecimiento: proveedores y órdenes de compra (el stock entra al recibir una orden)
     Route::prefix('admin')->group(function () {
+        // Catálogos: marcas, categorías, métodos de envío y de pago
+        Route::prefix('catalogs/{catalog}')->where(['catalog' => implode('|', array_keys(CatalogController::CATALOGS))])->group(function () {
+            Route::get('/', [CatalogController::class, 'index'])->name('catalogs.index');
+            Route::get('create', [CatalogController::class, 'create'])->name('catalogs.create');
+            Route::post('/', [CatalogController::class, 'store'])->name('catalogs.store');
+            Route::get('{id}/edit', [CatalogController::class, 'edit'])->whereNumber('id')->name('catalogs.edit');
+            Route::put('{id}', [CatalogController::class, 'update'])->whereNumber('id')->name('catalogs.update');
+            Route::delete('{id}', [CatalogController::class, 'destroy'])->whereNumber('id')->name('catalogs.destroy');
+        });
+
         // Pedidos: consulta y cambios de estado (RN8)
         Route::get('orders', [OrderAdminController::class, 'index'])->name('admin.orders.index');
         Route::get('orders/{order}', [OrderAdminController::class, 'show'])->name('admin.orders.show');
