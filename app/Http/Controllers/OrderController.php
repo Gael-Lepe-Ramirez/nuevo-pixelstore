@@ -144,7 +144,7 @@ class OrderController extends Controller
         return view('orders.mine', compact('orders'));
     }
 
-    public function downloadPDF(\App\Models\Order $order)
+    public function downloadPDF(Request $request, \App\Models\Order $order)
     {
         // Seguridad: Verificar que el usuario sea el dueño de la compra o el admin
         if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
@@ -154,8 +154,12 @@ class OrderController extends Controller
         // Cargar la vista del PDF con los datos de la orden
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('orders.pdf', compact('order'));
         
-        // Retornar el archivo para su descarga directa
-        return $pdf->download('recibo_pixelstore_' . $order->id . '.pdf');
+        $archivo = 'recibo_pixelstore_' . $order->folio() . '.pdf';
+
+        // Por defecto el recibo se abre en el navegador; con ?descargar=1 se descarga como archivo.
+        return $request->boolean('descargar')
+            ? $pdf->download($archivo)
+            : $pdf->stream($archivo);
     }
 
     public function success(\App\Models\Order $order)

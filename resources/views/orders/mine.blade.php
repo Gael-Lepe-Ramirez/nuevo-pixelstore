@@ -29,7 +29,8 @@
               <td>@include('orders._badge', ['value' => $order->payment_status])</td>
               <td class="text-right text-nowrap">
                 <a href="{{ route('orders.success', $order) }}" class="btn btn-sm btn-outline-dark">Ver</a>
-                <a href="{{ route('orders.pdf', $order) }}" class="btn btn-sm btn-outline-danger">PDF</a>
+                <a href="{{ route('orders.pdf', $order) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-danger" title="Ver recibo">Recibo</a>
+                <a href="{{ route('orders.pdf', ['order' => $order, 'descargar' => 1]) }}" class="btn btn-sm btn-outline-secondary" title="Descargar recibo"><i class="fa fa-download"></i></a>
               </td>
             </tr>
           @empty

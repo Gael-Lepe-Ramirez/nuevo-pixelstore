@@ -9,9 +9,8 @@ use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\PurchaseOrderController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// La página principal de la tienda es el catálogo de productos.
+Route::redirect('/', '/products');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

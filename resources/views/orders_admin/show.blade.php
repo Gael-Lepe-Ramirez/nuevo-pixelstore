@@ -102,7 +102,10 @@
 
   <div class="d-flex justify-content-between">
     <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary">← Volver a pedidos</a>
-    <a href="{{ route('orders.pdf', $order) }}" class="btn btn-outline-danger">Descargar recibo (PDF)</a>
+    <div>
+      <a href="{{ route('orders.pdf', $order) }}" target="_blank" rel="noopener" class="btn btn-outline-danger">Ver recibo</a>
+      <a href="{{ route('orders.pdf', ['order' => $order, 'descargar' => 1]) }}" class="btn btn-outline-secondary"><i class="fa fa-download"></i> Descargar</a>
+    </div>
   </div>
 </div>
 @endsection
