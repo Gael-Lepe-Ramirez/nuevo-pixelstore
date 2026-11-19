@@ -10,25 +10,57 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    /** Opciones de orden del catálogo: valor del filtro => [columna, dirección] */
+    public const SORTS = [
+        'recientes' => ['created_at', 'desc'],
+        'precio_asc' => ['price', 'asc'],
+        'precio_desc' => ['price', 'desc'],
+        'nombre' => ['name', 'asc'],
+    ];
+
     public function index(Request $request)
     {
         $query = Product::with(['category', 'brand', 'image']);
 
-        if ($request->has('search') && $request->search != '') {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+        // Los clientes solo ven productos activos; el administrador ve también los desactivados.
+        if (! $request->user()?->can('admin')) {
+            $query->where('is_active', true);
         }
 
-        $products = $query->paginate(6);
+        // Búsqueda por nombre o descripción (agrupada para no mezclarse con los demás filtros)
+        if ($request->filled('search')) {
+            $texto = '%' . $request->search . '%';
+            $query->where(fn ($q) => $q->where('name', 'like', $texto)->orWhere('description', 'like', $texto));
+        }
 
-        return view('products.index', compact('products'));
+        // Filtros por categoría y marca: SELECT ... WHERE category_id = ? AND brand_id = ?
+        if ($request->filled('categoria')) {
+            $query->whereHas('category', fn ($q) => $q->where('slug', $request->categoria));
+        }
+        if ($request->filled('marca')) {
+            $query->where('brand_id', $request->integer('marca'));
+        }
+
+        // Orden: SELECT ... ORDER BY price ASC|DESC, name o created_at
+        [$columna, $direccion] = self::SORTS[$request->input('orden')] ?? self::SORTS['recientes'];
+        $query->orderBy($columna, $direccion)->orderBy('id');
+
+        $products = $query->paginate(9)->withQueryString();
+
+        $categories = Category::orderBy('name')->get();
+        $brands = Brand::orderBy('name')->get();
+
+        return view('products.index', compact('products', 'categories', 'brands'));
     }
 
     /**
      * Detalle de un producto, con productos relacionados de la misma categoría.
      */
-    public function show(Product $product)
+    public function show(Request $request, Product $product)
     {
+        // Un producto desactivado solo lo puede ver el administrador.
+        abort_if(! $product->is_active && ! $request->user()?->can('admin'), 404);
+
         $product->load(['category', 'brand', 'image']);
 
         $relacionados = Product::with(['brand', 'image'])

@@ -53,7 +53,12 @@
               </li>
               
               <li class="nav-item {{ request()->is('carrito*') ? 'active' : '' }}">
-                <a class="nav-link font-weight-bold text-danger" href="{{ route('cart.index') }}">Mi Carrito</a>
+                <a class="nav-link font-weight-bold text-danger" href="{{ route('cart.index') }}">Mi Carrito
+                  @php $piezasCarrito = collect(session('cart', []))->sum('quantity'); @endphp
+                  @if($piezasCarrito > 0)
+                    <span class="badge badge-danger ml-1" style="border-radius: 10px;">{{ $piezasCarrito }}</span>
+                  @endif
+                </a>
               </li>
 
               @auth

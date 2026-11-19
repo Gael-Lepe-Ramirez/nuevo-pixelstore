@@ -61,6 +61,8 @@
         -webkit-box-orient: vertical;
         margin-bottom: 15px;
     }
+    .filter-bar { background: #fff; border-radius: 12px; padding: 18px 18px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .filter-bar .form-control { border-radius: 8px; }
     .product-link { color: inherit; }
     .product-link:hover { color: #f33f3f; text-decoration: none; }
     .product-img { transition: transform 0.3s ease; }
@@ -109,11 +111,60 @@
         </div>
       </div>
       
-      @foreach($products as $product)
+      <div class="col-md-12">
+        @include('products._cart_flash')
+
+        {{-- Filtros del catálogo --}}
+        <form method="GET" action="{{ route('products.index') }}" class="filter-bar mb-4">
+          <div class="form-row align-items-end">
+            <div class="col-lg-3 col-md-6 mb-2">
+              <label class="small text-muted mb-1" for="search">Buscar</label>
+              <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control" placeholder="Nombre o descripción">
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
+              <label class="small text-muted mb-1" for="categoria">Categoría</label>
+              <select name="categoria" id="categoria" class="form-control">
+                <option value="">Todas</option>
+                @foreach($categories as $cat)
+                  <option value="{{ $cat->slug }}" @selected(request('categoria') === $cat->slug)>{{ $cat->name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="col-lg-2 col-md-4 mb-2">
+              <label class="small text-muted mb-1" for="marca">Marca</label>
+              <select name="marca" id="marca" class="form-control">
+                <option value="">Todas</option>
+                @foreach($brands as $brand)
+                  <option value="{{ $brand->id }}" @selected((string) request('marca') === (string) $brand->id)>{{ $brand->name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="col-lg-2 col-md-4 mb-2">
+              <label class="small text-muted mb-1" for="orden">Ordenar por</label>
+              <select name="orden" id="orden" class="form-control">
+                <option value="recientes" @selected(request('orden', 'recientes') === 'recientes')>Más recientes</option>
+                <option value="precio_asc" @selected(request('orden') === 'precio_asc')>Precio: menor a mayor</option>
+                <option value="precio_desc" @selected(request('orden') === 'precio_desc')>Precio: mayor a menor</option>
+                <option value="nombre" @selected(request('orden') === 'nombre')>Nombre (A-Z)</option>
+              </select>
+            </div>
+            <div class="col-lg-2 col-md-4 mb-2 d-flex">
+              <button type="submit" class="btn btn-cart flex-fill mr-2">Filtrar</button>
+              <a href="{{ route('products.index') }}" class="btn btn-outline-secondary" style="border-radius: 8px;" title="Quitar filtros"><i class="fa fa-times"></i></a>
+            </div>
+          </div>
+          <div class="small text-muted mt-1">{{ $products->total() }} {{ $products->total() === 1 ? 'producto' : 'productos' }}</div>
+        </form>
+      </div>
+
+      @forelse($products as $product)
       <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
         <div class="product-card">
           
           <a href="{{ route('products.show', $product) }}" class="product-img-wrapper d-block">
+            @unless($product->is_active)
+              <span class="badge badge-secondary" style="position: absolute; top: 12px; left: 12px; z-index: 2; padding: 6px 10px;">Desactivado</span>
+            @endunless
             @if($product->image)
               <img src="{{ asset('storage/' . $product->image->url) }}" alt="{{ $product->name }}" class="product-img">
             @else
@@ -157,10 +208,14 @@
 
         </div>
       </div>
-      @endforeach
+      @empty
+      <div class="col-md-12 text-center text-muted py-5">
+        No encontramos productos con esos filtros. <a href="{{ route('products.index') }}">Ver todo el catálogo</a>
+      </div>
+      @endforelse
 
       <div class="col-md-12 mt-5 mb-4 d-flex justify-content-center">
-          {{ $products->appends(['search' => request('search')])->links() }}
+          {{ $products->links() }}
       </div>
 
     </div>
