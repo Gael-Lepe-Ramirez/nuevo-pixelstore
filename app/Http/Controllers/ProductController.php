@@ -24,6 +24,24 @@ class ProductController extends Controller
         return view('products.index', compact('products'));
     }
 
+    /**
+     * Detalle de un producto, con productos relacionados de la misma categoría.
+     */
+    public function show(Product $product)
+    {
+        $product->load(['category', 'brand', 'image']);
+
+        $relacionados = Product::with(['brand', 'image'])
+            ->where('category_id', $product->category_id)
+            ->whereKeyNot($product->id)
+            ->where('is_active', true)
+            ->inRandomOrder()
+            ->take(3)
+            ->get();
+
+        return view('products.show', compact('product', 'relacionados'));
+    }
+
     public function create()
     {
         $categories = Category::all();

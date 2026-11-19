@@ -61,6 +61,10 @@
         -webkit-box-orient: vertical;
         margin-bottom: 15px;
     }
+    .product-link { color: inherit; }
+    .product-link:hover { color: #f33f3f; text-decoration: none; }
+    .product-img { transition: transform 0.3s ease; }
+    .product-card:hover .product-img { transform: scale(1.04); }
     .btn-cart {
         background-color: #f33f3f;
         color: #fff;
@@ -109,17 +113,17 @@
       <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
         <div class="product-card">
           
-          <div class="product-img-wrapper">
+          <a href="{{ route('products.show', $product) }}" class="product-img-wrapper d-block">
             @if($product->image)
               <img src="{{ asset('storage/' . $product->image->url) }}" alt="{{ $product->name }}" class="product-img">
             @else
               <img src="{{ asset('storage/productos/generico.jpg') }}" alt="Imagen genérica" class="product-img">
             @endif
-          </div>
+          </a>
           
           <div class="product-body">
             <small class="text-muted text-uppercase" style="letter-spacing:1px;">{{ $product->brand?->name }}</small>
-            <h4 class="product-title" title="{{ $product->name }}">{{ $product->name }}</h4>
+            <h4 class="product-title" title="{{ $product->name }}"><a href="{{ route('products.show', $product) }}" class="product-link">{{ $product->name }}</a></h4>
             <div class="product-price">${{ number_format($product->price, 2) }}</div>
             <p class="product-desc">{{ $product->description }}</p>
             
