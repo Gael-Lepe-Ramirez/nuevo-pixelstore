@@ -19,18 +19,19 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Creamos las categorías primero
         $categorias = [
-            'Laptops y Equipos Armados',
-            'Monitores y Pantallas',
-            'Componentes de PC',
-            'Accesorios y Periféricos',
-            'Consolas y Videojuegos',
-            'Herramientas y Refacciones'
+            'Laptops y Equipos Armados' => 'Laptops y computadoras listas para usar.',
+            'Monitores y Pantallas' => 'Monitores para oficina, diseño y gaming.',
+            'Componentes de PC' => 'Procesadores, tarjetas de video, memorias, almacenamiento y fuentes.',
+            'Accesorios y Periféricos' => 'Mouse, teclados, audífonos y otros accesorios.',
+            'Consolas y Videojuegos' => 'Consolas y accesorios para jugar.',
+            'Herramientas y Refacciones' => 'Herramientas para armar y reparar equipos.',
         ];
 
-        foreach ($categorias as $nombre) {
+        foreach ($categorias as $nombre => $descripcion) {
             Category::create([
                 'name' => $nombre,
                 'slug' => str($nombre)->slug(),
+                'description' => $descripcion,
             ]);
         }
 

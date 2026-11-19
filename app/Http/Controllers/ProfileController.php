@@ -48,6 +48,14 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // RN6: un cliente con pedidos no se puede borrar, para no perder el historial de ventas
+        // (la llave orders.user_id es ON DELETE RESTRICT).
+        if ($user->orders()->exists()) {
+            return Redirect::route('profile.edit')->withErrors([
+                'password' => 'No es posible eliminar la cuenta porque tiene pedidos registrados; el historial de compras debe conservarse.',
+            ], 'userDeletion');
+        }
+
         Auth::logout();
 
         $user->delete();

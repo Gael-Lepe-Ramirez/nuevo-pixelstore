@@ -38,6 +38,7 @@ class CatalogController extends Controller
             'usage' => ['products', 'category_id'],
             'fields' => [
                 ['name' => 'name', 'label' => 'Nombre', 'type' => 'text', 'max' => 100, 'required' => true, 'unique' => true],
+                ['name' => 'description', 'label' => 'Descripción', 'type' => 'text', 'max' => 150, 'required' => false],
             ],
         ],
         'shipping-methods' => [
