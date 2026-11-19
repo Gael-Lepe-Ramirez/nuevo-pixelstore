@@ -65,6 +65,9 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
     });
 });
 
+// Detalle de un producto (público). Va después de /products/create para que «create» no se tome como slug.
+Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/carrito', [OrderController::class, 'cart'])->name('cart.index');
     Route::post('/carrito/agregar/{product}', [OrderController::class, 'add'])->name('cart.add');
