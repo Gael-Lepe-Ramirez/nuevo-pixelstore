@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Panel de reportes del administrador. Cada reporte es una consulta de agregación sobre el modelo
- * de datos (SUM, COUNT, AVG, GROUP BY y JOIN); la vista muestra también la consulta SQL equivalente.
+ * de datos (SUM, COUNT, AVG, GROUP BY y JOIN).
  */
 class ReportController extends Controller
 {

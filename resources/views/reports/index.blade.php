@@ -12,9 +12,6 @@
   .bar-value { font-size: 0.75rem; color: #555; margin-bottom: 4px; white-space: nowrap; }
   .bar-labels { display: flex; gap: 14px; }
   .bar-labels div { flex: 1; text-align: center; font-size: 0.8rem; color: #7a7a7a; padding-top: 6px; }
-  details.sql { margin-top: 14px; }
-  details.sql summary { cursor: pointer; color: #f33f3f; font-size: 0.85rem; }
-  details.sql pre { background: #1e1e1e; color: #f5f0ea; font-size: 0.8rem; padding: 12px; border-radius: 8px; margin-top: 8px; white-space: pre-wrap; }
 </style>
 
 <div class="page-heading products-heading header-text">
@@ -64,15 +61,6 @@
       <div class="bar-labels">
         @foreach($meses as $m) <div>{{ $m['etiqueta'] }}</div> @endforeach
       </div>
-      <details class="sql"><summary>Ver consulta SQL</summary>
-<pre>SELECT DATE_FORMAT(created_at, '%Y-%m') AS mes,
-       SUM(total_amount) AS ventas, COUNT(*) AS pedidos
-FROM orders
-WHERE payment_status = 'pagado'
-  AND created_at >= (inicio del mes, hace 5 meses)
-GROUP BY mes
-ORDER BY mes;</pre>
-      </details>
     </div></div>
 
     {{-- 3. Más vendidos --}}
@@ -88,17 +76,6 @@ ORDER BY mes;</pre>
           @endforelse
         </tbody>
       </table>
-      <details class="sql"><summary>Ver consulta SQL</summary>
-<pre>SELECT p.name, SUM(op.quantity) AS piezas,
-       SUM(op.quantity * op.unit_price) AS importe
-FROM order_product op
-JOIN orders o   ON o.id = op.order_id
-JOIN products p ON p.id = op.product_id
-WHERE o.status &lt;&gt; 'cancelado'
-GROUP BY p.id, p.name
-ORDER BY piezas DESC
-LIMIT 5;</pre>
-      </details>
     </div></div>
   </div>
 
@@ -120,13 +97,6 @@ LIMIT 5;</pre>
           @endforelse
         </tbody>
       </table>
-      <details class="sql"><summary>Ver consulta SQL</summary>
-<pre>SELECT p.name, b.name AS marca, p.stock
-FROM products p
-JOIN brands b ON b.id = p.brand_id
-WHERE p.is_active = 1 AND p.stock &lt;= {{ $lowStock }}
-ORDER BY p.stock;</pre>
-      </details>
     </div></div>
 
     {{-- 5. Compras por proveedor --}}
@@ -142,17 +112,6 @@ ORDER BY p.stock;</pre>
           @endforelse
         </tbody>
       </table>
-      <details class="sql"><summary>Ver consulta SQL</summary>
-<pre>SELECT s.name, COUNT(DISTINCT po.id) AS ordenes,
-       SUM(pop.quantity) AS piezas,
-       SUM(pop.quantity * pop.unit_cost) AS importe
-FROM purchase_orders po
-JOIN suppliers s ON s.id = po.supplier_id
-JOIN purchase_order_product pop ON pop.purchase_order_id = po.id
-WHERE po.status = 'recibida'
-GROUP BY s.id, s.name
-ORDER BY importe DESC;</pre>
-      </details>
     </div></div>
   </div>
 </div>
