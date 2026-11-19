@@ -67,6 +67,7 @@
                         @can('admin')
                           <div class="dropdown-divider"></div>
                           <h6 class="dropdown-header">Administración</h6>
+                          <a class="dropdown-item py-2" href="{{ route('admin.reports') }}"><i class="fa fa-bar-chart mr-2"></i> Reportes</a>
                           <a class="dropdown-item py-2" href="{{ route('admin.orders.index') }}"><i class="fa fa-shopping-cart mr-2"></i> Pedidos</a>
                           <a class="dropdown-item py-2" href="{{ route('catalogs.index', 'brands') }}"><i class="fa fa-tags mr-2"></i> Catálogos</a>
                           <a class="dropdown-item py-2" href="{{ route('suppliers.index') }}"><i class="fa fa-truck mr-2"></i> Proveedores</a>
