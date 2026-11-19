@@ -12,6 +12,14 @@
   .bar-value { font-size: 0.75rem; color: #555; margin-bottom: 4px; white-space: nowrap; }
   .bar-labels { display: flex; gap: 14px; }
   .bar-labels div { flex: 1; text-align: center; font-size: 0.8rem; color: #7a7a7a; padding-top: 6px; }
+  @media (max-width: 575.98px) {
+    .rep-card { padding: 16px; }
+    .kpi-value { font-size: 1.15rem; overflow-wrap: anywhere; }
+    .bars, .bar-labels { gap: 6px; }
+    .bars { height: 180px; }
+    .bar-value { font-size: 0.6rem; }
+    .bar-labels div { font-size: 0.7rem; }
+  }
 </style>
 
 <div class="page-heading products-heading header-text">
@@ -66,7 +74,7 @@
     {{-- 3. Más vendidos --}}
     <div class="col-lg-5 mb-4"><div class="rep-card">
       <h5>Los 5 productos más vendidos</h5>
-      <table class="table table-sm mb-0">
+      <div class="table-responsive"><table class="table table-sm mb-0">
         <thead><tr><th>Producto</th><th class="text-right">Piezas</th><th class="text-right">Importe</th></tr></thead>
         <tbody>
           @forelse($masVendidos as $p)
@@ -75,7 +83,7 @@
             <tr><td colspan="3" class="text-muted text-center py-3">Todavía no hay ventas.</td></tr>
           @endforelse
         </tbody>
-      </table>
+      </table></div>
     </div></div>
   </div>
 
@@ -83,7 +91,7 @@
     {{-- 4. Stock bajo --}}
     <div class="col-lg-6 mb-4"><div class="rep-card">
       <h5>Stock bajo (≤ {{ $lowStock }} piezas)</h5>
-      <table class="table table-sm mb-0">
+      <div class="table-responsive"><table class="table table-sm mb-0">
         <thead><tr><th>Producto</th><th class="text-right">Stock</th><th></th></tr></thead>
         <tbody>
           @forelse($stockBajo as $p)
@@ -96,13 +104,13 @@
             <tr><td colspan="3" class="text-muted text-center py-3">Todos los productos tienen existencias suficientes.</td></tr>
           @endforelse
         </tbody>
-      </table>
+      </table></div>
     </div></div>
 
     {{-- 5. Compras por proveedor --}}
     <div class="col-lg-6 mb-4"><div class="rep-card">
       <h5>Compras recibidas por proveedor</h5>
-      <table class="table table-sm mb-0">
+      <div class="table-responsive"><table class="table table-sm mb-0">
         <thead><tr><th>Proveedor</th><th class="text-right">Órdenes</th><th class="text-right">Piezas</th><th class="text-right">Importe</th></tr></thead>
         <tbody>
           @forelse($porProveedor as $s)
@@ -111,7 +119,7 @@
             <tr><td colspan="4" class="text-muted text-center py-3">Todavía no hay compras recibidas.</td></tr>
           @endforelse
         </tbody>
-      </table>
+      </table></div>
     </div></div>
   </div>
 </div>

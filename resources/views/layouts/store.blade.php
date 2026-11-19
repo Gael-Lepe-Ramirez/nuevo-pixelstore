@@ -27,6 +27,33 @@
           border-bottom-color: #f33f3f;
         }
       }
+
+      /* ---------- Celular ----------
+         Los títulos de la plantilla (56–62 px, con letras espaciadas) no cabían en una
+         pantalla de 375 px; el navegador del celular entonces "alejaba" toda la página
+         y todo se veía chico. Aquí se reducen y se permite que una palabra larga se parta. */
+      img { max-width: 100%; }
+      body { overflow-x: hidden; }
+
+      @media (max-width: 767.98px) {
+        .page-heading { padding: 130px 0 50px !important; }
+        .banner .banner-item { padding: 130px 0 70px !important; }
+        .banner .text-content h2,
+        .page-heading .text-content h2 {
+          font-size: 1.9rem !important;
+          letter-spacing: 1px !important;
+          line-height: 1.2;
+          overflow-wrap: anywhere;
+        }
+        .banner .text-content h4,
+        .page-heading .text-content h4 {
+          font-size: 1rem !important;
+          letter-spacing: 1px !important;
+        }
+        .breadcrumb { font-size: 0.85rem; }
+        /* Filas de botones (Volver / Guardar, etc.): si no caben, bajan a otra línea. */
+        .d-flex.justify-content-between { flex-wrap: wrap; gap: 8px; }
+      }
     </style>
 </head>
 

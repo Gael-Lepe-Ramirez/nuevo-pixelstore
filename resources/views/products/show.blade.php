@@ -17,6 +17,11 @@
     .related-card:hover { transform: translateY(-4px); }
     .related-card img { width: 100%; height: 170px; object-fit: cover; }
     .related-card a { color: inherit; text-decoration: none; }
+    @media (max-width: 767.98px) {
+      .detail-img { height: 260px; }
+      .detail-title { font-size: 1.45rem; }
+      .detail-price { font-size: 1.6rem; }
+    }
 </style>
 
 <div class="page-heading products-heading header-text">
