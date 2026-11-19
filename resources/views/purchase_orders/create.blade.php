@@ -18,7 +18,7 @@
 
 @php
   // Renglones a pintar: los que el usuario ya había capturado (si hubo error) o uno vacío.
-  $oldLines = old('lines', [['product_id' => '', 'quantity' => 1, 'unit_cost' => '']]);
+  $oldLines = old('lines', [['product_id' => request('producto', ''), 'quantity' => 1, 'unit_cost' => '']]);
 @endphp
 
 <div class="container mb-5 mt-4">

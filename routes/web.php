@@ -8,6 +8,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\ReportController;
 
 // La página principal de la tienda es el catálogo de productos.
 Route::redirect('/', '/products');
@@ -51,6 +52,8 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
         });
 
         // Pedidos: consulta y cambios de estado (RN8)
+        Route::get('reports', [ReportController::class, 'index'])->name('admin.reports');
+
         Route::get('orders', [OrderAdminController::class, 'index'])->name('admin.orders.index');
         Route::get('orders/{order}', [OrderAdminController::class, 'show'])->name('admin.orders.show');
         Route::post('orders/{order}/{action}', [OrderAdminController::class, 'transition'])
