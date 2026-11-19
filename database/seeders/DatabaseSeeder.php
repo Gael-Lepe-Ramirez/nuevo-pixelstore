@@ -11,12 +11,21 @@ use App\Models\PurchaseOrder;
 use App\Models\ShippingMethod;
 use App\Models\Supplier;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Si la base ya tiene datos no se vuelve a sembrar (así cada despliegue
+        // en Railway puede ejecutar db:seed sin duplicar nada).
+        if (Category::query()->exists()) {
+            $this->command?->info('La base ya tiene datos; se omite el sembrado.');
+
+            return;
+        }
+
         // 1. Creamos las categorías primero
         $categorias = [
             'Laptops y Equipos Armados' => 'Laptops y computadoras listas para usar.',
@@ -162,10 +171,14 @@ class DatabaseSeeder extends Seeder
         }
 
         // 4. Creamos el usuario administrador
-        User::factory()->create([
+        // (sin factory: en producción no se instala Faker). La contraseña sale de
+        // ADMIN_PASSWORD; si no existe, se usa 'password' como en local.
+        User::forceCreate([
             'name' => 'Admin PixelStore',
             'email' => 'admin@pixelstore.com',
             'role' => 'admin',
+            'password' => Hash::make(env('ADMIN_PASSWORD', 'password')),
+            'email_verified_at' => now(),
         ]);
     }
 }

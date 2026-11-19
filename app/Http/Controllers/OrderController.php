@@ -168,7 +168,13 @@ class OrderController extends Controller
         }
 
         // 3. Enviar el recibo por correo electrónico
-        Mail::to(auth()->user()->email)->send(new OrderReceipt($order));
+        //    Si el servidor no puede enviar correo (en Railway el plan de prueba
+        //    bloquea SMTP) la compra no falla: el error se registra en el log.
+        try {
+            Mail::to(auth()->user()->email)->send(new OrderReceipt($order));
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         // 4. Vaciar el carrito
         session()->forget('cart');
