@@ -10,6 +10,24 @@
     <link rel="stylesheet" href="{{ asset('assets/css/fontawesome.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/templatemo-sixteen.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/owl.css') }}">
+    <style>
+      /* La plantilla solo agrega padding-bottom y borde al enlace activo o con el cursor encima,
+         así que la barra cambiaba de alto según la página y el logo se movía. Aquí todos los
+         enlaces tienen siempre el mismo alto (borde transparente) y solo cambia el color. */
+      @media (min-width: 992px) {
+        .navbar .navbar-nav a.nav-link {
+          padding-bottom: 25px;
+          border-bottom: 3px solid transparent;
+        }
+        .navbar .navbar-nav .nav-link:hover,
+        .navbar .navbar-nav .active > .nav-link,
+        .navbar .navbar-nav .nav-link.active,
+        .navbar .navbar-nav .nav-link.show,
+        .navbar .navbar-nav .show > .nav-link {
+          border-bottom-color: #f33f3f;
+        }
+      }
+    </style>
 </head>
 
 <body>
