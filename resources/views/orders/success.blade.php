@@ -35,8 +35,12 @@
                 </p>
 
                 <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center">
-                    <a href="{{ route('orders.pdf', $order->id) }}" class="btn btn-danger px-4 py-3 font-weight-bold mb-3 mb-sm-0" style="border-radius: 8px; margin-right: 15px;">
-                        <i class="fa fa-file-pdf-o mr-2"></i> Descargar Recibo (PDF)
+                    <a href="{{ route('orders.pdf', $order->id) }}" target="_blank" rel="noopener" class="btn btn-danger px-4 py-3 font-weight-bold mb-3 mb-sm-0" style="border-radius: 8px; margin-right: 15px;">
+                        <i class="fa fa-file-pdf-o mr-2"></i> Ver Recibo
+                    </a>
+
+                    <a href="{{ route('orders.pdf', ['order' => $order->id, 'descargar' => 1]) }}" class="btn btn-outline-danger px-4 py-3 font-weight-bold mb-3 mb-sm-0" style="border-radius: 8px; margin-right: 15px;">
+                        <i class="fa fa-download mr-2"></i> Descargar PDF
                     </a>
                     
                     <a href="{{ route('products.index') }}" class="btn btn-dark px-4 py-3 font-weight-bold" style="border-radius: 8px;">
