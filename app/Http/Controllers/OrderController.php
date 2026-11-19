@@ -19,13 +19,25 @@ class OrderController extends Controller
         $cart = session()->get('cart', []);
         $shippingMethods = ShippingMethod::orderBy('cost')->get();
         $paymentMethods = PaymentMethod::orderBy('name')->get();
-        return view('orders.cart', compact('cart', 'shippingMethods', 'paymentMethods'));
+        // Existencias actuales, para limitar el botón «+» de cada renglón
+        $stock = Product::whereIn('id', array_keys($cart))->pluck('stock', 'id');
+        return view('orders.cart', compact('cart', 'shippingMethods', 'paymentMethods', 'stock'));
     }
 
     // Agrega un producto al carrito en la sesión
     public function add(Request $request, Product $product)
     {
         $cart = session()->get('cart', []);
+        $enCarrito = $cart[$product->id]['quantity'] ?? 0;
+
+        if (! $product->is_active) {
+            return redirect()->back()->with('cart_error', 'Este producto ya no está disponible.');
+        }
+        if ($enCarrito + 1 > $product->stock) {
+            return redirect()->back()->with('cart_error', $product->stock < 1
+                ? "«{$product->name}» está agotado."
+                : "Solo hay {$product->stock} piezas de «{$product->name}» y ya las tienes en tu carrito.");
+        }
 
         if (isset($cart[$product->id])) {
             $cart[$product->id]['quantity']++;
@@ -39,7 +51,36 @@ class OrderController extends Controller
         }
 
         session()->put('cart', $cart);
-        return redirect()->back();
+        return redirect()->back()->with('cart_success', "«{$product->name}» se agregó a tu carrito.");
+    }
+
+    /**
+     * Botones + y − del carrito. La cantidad nunca supera las existencias; si llega a 0 se quita el renglón.
+     */
+    public function update(Request $request, Product $product)
+    {
+        $request->validate(['action' => 'required|in:increase,decrease']);
+        $cart = session()->get('cart', []);
+
+        if (! isset($cart[$product->id])) {
+            return redirect()->route('cart.index');
+        }
+
+        if ($request->action === 'increase') {
+            if ($cart[$product->id]['quantity'] + 1 > $product->stock) {
+                return redirect()->route('cart.index')
+                    ->with('error', "Solo hay {$product->stock} piezas de «{$product->name}».");
+            }
+            $cart[$product->id]['quantity']++;
+        } else {
+            $cart[$product->id]['quantity']--;
+            if ($cart[$product->id]['quantity'] < 1) {
+                unset($cart[$product->id]);
+            }
+        }
+
+        session()->put('cart', $cart);
+        return redirect()->route('cart.index');
     }
 
     // Quita un producto del carrito

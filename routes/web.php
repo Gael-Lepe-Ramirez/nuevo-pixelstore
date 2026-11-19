@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/carrito', [OrderController::class, 'cart'])->name('cart.index');
     Route::post('/carrito/agregar/{product}', [OrderController::class, 'add'])->name('cart.add');
     Route::post('/carrito/remover/{id}', [OrderController::class, 'remove'])->name('cart.remove');
+    Route::post('/carrito/actualizar/{product}', [OrderController::class, 'update'])->name('cart.update');
     Route::post('/comprar', [OrderController::class, 'checkout'])->name('cart.checkout');
     Route::get('/mis-pedidos', [OrderController::class, 'mine'])->name('orders.mine');
     Route::get('/orders/{order}/pdf', [App\Http\Controllers\OrderController::class, 'downloadPDF'])->name('orders.pdf');

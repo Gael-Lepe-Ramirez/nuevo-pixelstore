@@ -37,6 +37,8 @@
     </ol>
   </nav>
 
+  @include('products._cart_flash')
+
   @if(! $product->is_active)
     <div class="alert alert-warning">Este producto está desactivado y no se puede comprar.</div>
   @endif

@@ -67,7 +67,22 @@
                                     {{ $details['name'] }}
                                 </td>
                                 <td class="text-center text-muted">${{ number_format($details['price'], 2) }}</td>
-                                <td class="text-center">{{ $details['quantity'] }}</td>
+                                <td class="text-center text-nowrap">
+                                    <form action="{{ route('cart.update', $id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="action" value="decrease">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Quitar una pieza" style="border-radius: 6px; width: 32px;">−</button>
+                                    </form>
+                                    <span class="mx-2 font-weight-bold">{{ $details['quantity'] }}</span>
+                                    <form action="{{ route('cart.update', $id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="action" value="increase">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Agregar una pieza" style="border-radius: 6px; width: 32px;" @disabled($details['quantity'] >= ($stock[$id] ?? 0))>+</button>
+                                    </form>
+                                    @if($details['quantity'] >= ($stock[$id] ?? 0))
+                                        <div class="small text-muted mt-1">Máximo disponible</div>
+                                    @endif
+                                </td>
                                 <td class="text-center font-weight-bold">${{ number_format($details['price'] * $details['quantity'], 2) }}</td>
                                 <td class="text-center">
                                     <form action="{{ route('cart.remove', $id) }}" method="POST">
